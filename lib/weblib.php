@@ -1046,6 +1046,7 @@ function page_get_doc_link_path(moodle_page $page) {
  * @return boolean
  */
 function validate_email($address) {
+    return true;
 
     return (preg_match('#^[-!\#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+'.
                  '(\.[-!\#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+)*'.

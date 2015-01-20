@@ -51,7 +51,7 @@ require_once(dirname(dirname(__FILE__)) . '/message/lib.php');
  *       earlier versions did not do it consistently either.
  *
  * @category message
- * @param stdClass $eventdata information about the message (component, userfrom, userto, ...)
+ * @param stdClass|\core\message\message $eventdata information about the message (component, userfrom, userto, ...)
  * @return mixed the integer ID of the new message or false if there was a problem with submitted data
  */
 function message_send($eventdata) {
@@ -74,6 +74,7 @@ function message_send($eventdata) {
     }
 
     if (!is_object($eventdata->userto)) {
+        print_object($eventdata->userto);
         $eventdata->userto = core_user::get_user($eventdata->userto);
     }
     if (!is_object($eventdata->userfrom)) {
