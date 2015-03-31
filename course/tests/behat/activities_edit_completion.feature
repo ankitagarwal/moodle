@@ -11,7 +11,7 @@ Feature: Edit completion settings of an activity
     And I log in as "admin"
     And I set the following administration settings values:
       | Enable completion tracking | 1 |
-    And I am on homepage
+    And I am on site homepage
     And I follow "Course 1"
     And I turn editing mode on
     And I add a "Page" to section "1" and I fill the form with:
