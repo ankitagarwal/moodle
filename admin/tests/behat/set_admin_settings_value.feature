@@ -9,6 +9,7 @@ Feature: Set admin settings value
       | fullname | shortname | category |
       | Course fullname | C_shortname | 0 |
     And I log in as "admin"
+    And I am on site homepage
     And I should see "Course fullname"
     And I should not see "C_shortname Course fullname"
 
@@ -16,12 +17,12 @@ Feature: Set admin settings value
     Given I set the following administration settings values:
       | Display extended course names | 1 |
     When I press "Save changes"
-    And I am on homepage
+    And I am on site homepage
     Then I should see "C_shortname Course fullname"
 
   Scenario: set admin value with short name
     Given I set the following administration settings values:
       | courselistshortnames | 1 |
     When I press "Save changes"
-    And I am on homepage
+    And I am on site homepage
     Then I should see "C_shortname Course fullname"
