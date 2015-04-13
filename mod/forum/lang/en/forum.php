@@ -413,6 +413,7 @@ $string['replies'] = 'Replies';
 $string['repliesmany'] = '{$a} replies so far';
 $string['repliesone'] = '{$a} reply so far';
 $string['reply'] = 'Reply';
+$string['replyabove'] = 'REPLY ABOVE THIS LINE';
 $string['replyforum'] = 'Reply to forum';
 $string['replytopostbyemail'] = 'If you reply to this via email, don\'t include a quoted copy of this post. ';
 $string['replytouser'] = 'Use email address in reply';

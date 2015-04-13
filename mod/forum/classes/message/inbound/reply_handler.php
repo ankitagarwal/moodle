@@ -38,6 +38,10 @@ require_once($CFG->dirroot . '/repository/lib.php');
  */
 class reply_handler extends \core\message\inbound\handler {
 
+    const TOKEN_START = "------x-----x---x---";
+
+    const TOKEN_END = "------x-----x---x---";
+
     /**
      * Return a description for the current handler.
      *
@@ -152,6 +156,7 @@ class reply_handler extends \core\message\inbound\handler {
             mtrace("--> Note: Post subject matched original post subject. Optimising from {$subject} to {$newsubject}");
             $subject = $newsubject;
         }
+        print_object($messagedata);
 
         $addpost = new \stdClass();
         $addpost->course       = $course->id;
@@ -162,13 +167,12 @@ class reply_handler extends \core\message\inbound\handler {
         $addpost->parent       = $post->id;
         $addpost->itemid       = file_get_unused_draft_itemid();
 
-        if (!empty($messagedata->html)) {
-            $addpost->message = $messagedata->html;
-            $addpost->messageformat = FORMAT_HTML;
+        if (!empty($messagedata->plain)) {
+            $addpost->message = $this->remove_quoted_text($messagedata->plain);
         } else {
-            $addpost->message = $messagedata->plain;
-            $addpost->messageformat = FORMAT_PLAIN;
+            $addpost->message = $this->remove_quoted_text(html_to_text($messagedata->plain));
         }
+        $addpost->messageformat = FORMAT_PLAIN;
 
         // We don't trust text coming from e-mail.
         $addpost->messagetrust = false;
@@ -288,7 +292,6 @@ class reply_handler extends \core\message\inbound\handler {
         return $fs->create_file_from_string($record, $attachment->content);
     }
 
-
     /**
      * Return the content of any success notification to be sent.
      * Both an HTML and Plain Text variant must be provided.
@@ -307,6 +310,41 @@ class reply_handler extends \core\message\inbound\handler {
         $message->plain = get_string('postbymailsuccess', 'mod_forum', $a);
         $message->html = get_string('postbymailsuccess_html', 'mod_forum', $a);
         return $message;
+    }
+
+    /**
+     * Remove quoted message string from the text message.
+     *
+     * @param string $text text message.
+     *
+     * @return mixed|string
+     */
+    protected function remove_quoted_text($text) {
+        // Remove all content below "Reply above this line" .....
+        $replaced = preg_replace("/" . self::TOKEN_START . ".*?". self::TOKEN_END . ".*?$/is", "", $text);
+
+        // Remove extra line. "Xyz wrote on...".
+        $splitted = preg_split("/\n|\r/", $replaced);
+        if (empty($splitted)) {
+            return $replaced;
+        }
+        $reverse = array_reverse($splitted);
+        var_dump($reverse);
+        $count = 0;
+        foreach ($reverse as $i => $element) {
+            // Remove 2 non empty line before this.
+            if (!empty($element)) {
+                unset($reverse[$i]);
+                $count++;
+            }
+            if ($count == 2) {
+                break;
+            }
+        }
+
+        $replaced = implode(PHP_EOL, array_reverse($reverse));
+
+        return trim($replaced);
     }
 
 }

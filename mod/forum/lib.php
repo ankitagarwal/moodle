@@ -789,9 +789,11 @@ function forum_cron() {
                 if (!empty($replyaddress)) {
                     // Add extra text to email messages if they can reply back.
                     $textfooter = "\n\n" . get_string('replytopostbyemail', 'mod_forum');
+                    $textheader = \mod_forum\message\inbound\reply_handler::TOKEN_START . get_string('replyabove', 'mod_forum') .
+                                  \mod_forum\message\inbound\reply_handler::TOKEN_END . "\n\n";
                     $htmlfooter = html_writer::tag('p', get_string('replytopostbyemail', 'mod_forum'));
-                    $additionalcontent = array('fullmessage' => array('footer' => $textfooter),
-                                     'fullmessagehtml' => array('footer' => $htmlfooter));
+                    $additionalcontent = array('fullmessage' => array('footer' => $textfooter, 'header' => $textheader),
+                                     'fullmessagehtml' => array('footer' => $htmlfooter, 'header' => $textheader));
                     $eventdata->set_additional_content('email', $additionalcontent);
                 }
 
