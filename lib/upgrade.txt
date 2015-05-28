@@ -1,6 +1,10 @@
 This files describes API changes in core libraries and APIs,
 information provided here is intended especially for developers.
 
+=== 3.0 ===
+
+* notify() now throws a debugging message. see MDL-50269.
+
 === 2.9 ===
 
 * The default home page for users has been changed to the dashboard (formely my home). See MDL-45774.
