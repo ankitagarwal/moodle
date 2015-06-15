@@ -29,7 +29,7 @@ define(['jquery',
         'core/ajax',
         'tool_lp/dragdrop-reorder',
         'tool_lp/tree',
-        'tool_lp/dialogue',
+        'core/dialogue',
         'tool_lp/menubar'],
        function($, url, templates, notification, str, ajax, dragdrop, Ariatree, Dialogue, menubar) {
 
@@ -89,7 +89,7 @@ define(['jquery',
     /**
      * A move competency popup was opened - initialise the aria tree in it.
      * @method initMovePopup
-     * @param {dialogue} The tool_lp/dialogue that was created.
+     * @param {dialogue} The core/dialogue that was created.
      */
     var initMovePopup = function(popup) {
         new Ariatree('[data-enhance=movetree]', function(target) {
