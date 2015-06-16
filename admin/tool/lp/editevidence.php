@@ -40,14 +40,14 @@ $PAGE->set_context($context);
 $title = get_string('evidencepage', 'tool_lp');
 $pagetitle = get_string('evidencepage', 'tool_lp');
 
-$form = new \tool_lp\form\learning_evidence(null);
+$form = new \tool_lp\form\evidence(null);
 
 if ($form->is_cancelled()) {
     // TODO - What do we do?
 }
 
 // Set up the page.
-$url = new moodle_url('/admin/tool/lp/learningevidence.php');
+$url = new moodle_url('/admin/tool/lp/editevidence.php');
 $PAGE->set_url($url);
 $PAGE->set_title($title);
 $PAGE->set_heading($title);

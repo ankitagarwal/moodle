@@ -31,7 +31,7 @@ use tool_lp\api;
 
 require_once($CFG->libdir.'/formslib.php');
 
-class learning_evidence extends moodleform {
+class evidence extends moodleform {
 
     /**
      * Define the form - called by parent constructor
@@ -39,15 +39,15 @@ class learning_evidence extends moodleform {
     public function definition() {
         $mform = $this->_form;
 
-        $mform->addElement('text', 'evidencename', get_string('evidencename', 'tool_lp'));
+        $mform->addElement('text', 'name', get_string('name'));
         $mform->setType('evidencename', PARAM_TEXT);
 
-        $mform->addElement('textarea', 'evidencedescription', get_string('evidencedescription', 'tool_lp'));
+        $mform->addElement('editor', 'description', get_string('description'));
         $mform->setType('evidencedescription', PARAM_TEXT);
 
         $mform->addElement('filepicker', 'evidencefileattachments', get_string('evidencefileattachments', 'tool_lp'), null, array('accepted_types' => '*'));
 
-        $mform->addElement('text', 'evidencelink', get_string('evidencelink', 'tool_lp'));
+        $mform->addElement('text', 'link', get_string('evidencelink'));
         $mform->setType('evidencelink', PARAM_TEXT);
 
         $this->add_action_buttons();
