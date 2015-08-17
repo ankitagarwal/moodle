@@ -73,9 +73,42 @@ if (!empty($formdata)) {
         $calendar = $form->get_file_content('importfile');
         $ical = new iCalendar();
         $ical->unserialize($calendar);
+
+        // First find invalid timezones if present.
+        $events = $ical->components['VEVENT'];
+        $invalidtzs = calendar_find_invalid_timezones($events);
+        if (!empty($invalidtzs)) {
+            // Invalid timezones found. Request the user to provide mappings.
+            $filename = $form->get_new_filename('importfile');
+            $filename = 'calendar_' . $filename . random_string(10);
+            $filepath = $CFG->tempdir . '/' . $filename;
+            $status = $form->save_file('importfile', $filepath);
+            $redirecturl = new moodle_url('/calendar/timezonemappings.php', array('filename' => $filename, 'subscriptionid' =>
+                $subscriptionid, 'courseid' => $courseid));
+            redirect($redirecturl);
+        }
+
         $importresults = calendar_import_icalendar_events($ical, $courseid, $subscriptionid);
     } else {
         try {
+            $sub = calendar_get_subscription($subscriptionid);
+            // Don't update a file subscription. TODO: Update from a new uploaded file.
+            if (empty($sub->url)) {
+                return 'File subscription not updated.';
+            }
+            $ical = calendar_get_icalendar($sub->url);
+            $events = $ical->components['VEVENT'];
+            $invalidtzs = calendar_find_invalid_timezones($events);
+            if (!empty($invalidtzs)) {
+                // Invalid timezones found. Request the user to provide mappings.
+                $filename = 'calendar_' . random_string(15);
+                $filepath = $CFG->tempdir . '/' . $filename;
+                $filedata = $ical->serialize();
+                file_put_contents($filepath, $filedata);
+                $redirecturl = new moodle_url('/calendar/timezonemappings.php', array('filename' => $filename, 'subscriptionid' =>
+                    $subscriptionid, 'courseid' => $courseid));
+                redirect($redirecturl);
+            }
             $importresults = calendar_update_subscription_events($subscriptionid);
         } catch (moodle_exception $e) {
             // Delete newly added subscription and show invalid url error.

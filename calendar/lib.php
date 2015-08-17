@@ -2946,14 +2946,22 @@ function calendar_add_icalendar_event($event, $courseid, $subscriptionid, $timez
 
     $tz = isset($event->properties['DTSTART'][0]->parameters['TZID']) ? $event->properties['DTSTART'][0]->parameters['TZID'] :
             $timezone;
-    $tz = core_date::normalise_timezone($tz);
+    $tz = calendar_get_mapped_timezone($tz, $subscriptionid);
+    if (empty($tz)) {
+        // This is not a valid timezone. We don't know what to do.
+        return 0;
+    }
     $eventrecord->timestart = strtotime($event->properties['DTSTART'][0]->value . ' ' . $tz);
     if (empty($event->properties['DTEND'])) {
         $eventrecord->timeduration = 0; // no duration if no end time specified
     } else {
         $endtz = isset($event->properties['DTEND'][0]->parameters['TZID']) ? $event->properties['DTEND'][0]->parameters['TZID'] :
                 $timezone;
-        $endtz = core_date::normalise_timezone($endtz);
+        $endtz = calendar_get_mapped_timezone($endtz, $subscriptionid);
+        if (empty($endtz)) {
+            // This is not a valid timezone. We don't know what to do.
+            return 0;
+        }
         $eventrecord->timeduration = strtotime($event->properties['DTEND'][0]->value . ' ' . $endtz) - $eventrecord->timestart;
     }
 
@@ -3001,6 +3009,28 @@ function calendar_add_icalendar_event($event, $courseid, $subscriptionid, $timez
     }
 }
 
+/**
+ * Get a valid timezone to be used.
+ *
+ * @param string $tz
+ * @param int $subscriptionid
+ *
+ * @return bool|mixed|string
+ */
+function calendar_get_mapped_timezone($tz, $subscriptionid) {
+    global $DB;
+
+    if ($mapped = core_date::find_valid_timezone($tz)) {
+        return $mapped;
+    }
+
+    $mapped = $DB->get_record('calendar_bad_tz_mapping', array('invalidtz' => $tz, 'subscriptionid' => $subscriptionid));
+    if (!empty($mapped)) {
+        return $mapped->validtz;
+    } // False if not found.
+
+    return false;
+}
 /**
  * Update a subscription from the form data in one of the rows in the existing subscriptions table.
  *
@@ -3053,13 +3083,15 @@ function calendar_delete_subscription($subscription) {
     // Delete subscription and related events.
     $DB->delete_records('event', array('subscriptionid' => $subscription));
     $DB->delete_records('event_subscriptions', array('id' => $subscription));
+    // Delete any custom mapping if present.
+    $DB->delete_records('calendar_bad_tz_mapping', array('subscriptionid' => $subscription));
     cache_helper::invalidate_by_definition('core', 'calendar_subscriptions', array(), array($subscription));
 }
 /**
  * From a URL, fetch the calendar and return an iCalendar object.
  *
  * @param string $url The iCalendar URL
- * @return stdClass The iCalendar object
+ * @return iCalendar The iCalendar object
  */
 function calendar_get_icalendar($url) {
     global $CFG;
@@ -3109,7 +3141,10 @@ function calendar_import_icalendar_events($ical, $courseid, $subscriptionid = nu
     } else {
         $timezone = 'UTC';
     }
-    foreach ($ical->components['VEVENT'] as $event) {
+
+    $events = $ical->components['VEVENT'];
+
+    foreach ($events as $event) {
         $res = calendar_add_icalendar_event($event, $courseid, $subscriptionid, $timezone);
         switch ($res) {
           case CALENDAR_IMPORT_EVENT_UPDATED:
@@ -3137,6 +3172,39 @@ function calendar_import_icalendar_events($ical, $courseid, $subscriptionid = nu
     }
 
     return $return;
+}
+
+/**
+ * Findout if any of the events provided uses timezone that we don't know about.
+ *
+ * @param array $events list of events.
+ *
+ * @return array list of invalid timezones found.
+ */
+function calendar_find_invalid_timezones($events) {
+    $invalidtzs = array();
+    foreach ($events as $event) {
+        // Start time.
+        if (isset($event->properties['DTSTART'][0]->parameters['TZID'])) {
+            $starttz = $event->properties['DTSTART'][0]->parameters['TZID'];
+            $validtz = core_date::find_valid_timezone($starttz);
+            if (empty($validtz)) {
+                // This is not a valid timezone.
+                $invalidtzs[] = $starttz;
+            }
+        }
+
+        // End time.
+        if (isset($event->properties['DTEND'][0]->parameters['TZID'])) {
+            $endtz = $event->properties['DTEND'][0]->parameters['TZID'];
+            $validtz = core_date::find_valid_timezone($endtz);
+            if (empty($validtz)) {
+                // This is not a valid timezone.
+                $invalidtzs[] = $endtz;
+            }
+        }
+    }
+    return $invalidtzs;
 }
 
 /**

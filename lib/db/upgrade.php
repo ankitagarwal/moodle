@@ -4440,6 +4440,23 @@ function xmldb_main_upgrade($oldversion) {
         // Main savepoint reached.
         upgrade_main_savepoint(true, 2015062500.01);
     }
+    echo $oldversion;
+    if ($oldversion < 2015080600.16) {
+
+        // Define field id to be added to calendar_bad_tz_mapping.
+        $table = new xmldb_table('calendar_bad_tz_mapping');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+        $table->add_field('subscriptionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('invalidtz', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null, 'subscriptionid');
+        $table->add_field('validtz', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null, 'invalidtz');
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2015080600.16);
+    }
 
     return true;
 }

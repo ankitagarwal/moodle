@@ -116,6 +116,31 @@ class core_date {
      * @return string timezone compatible with PHP
      */
     public static function normalise_timezone($tz) {
+
+        if ($validtz = self::find_valid_timezone($tz)) {
+            return $validtz;
+        }
+
+        // Is server timezone usable?
+        if (isset($CFG->timezone) and !is_numeric($CFG->timezone)) {
+            $result = @timezone_open($CFG->timezone); // Hide notices if invalid.
+            if ($result !== false) {
+                return $result->getName();
+            }
+        }
+
+        // Bad luck, use the php.ini default or value set in config.php.
+        return self::get_default_php_timezone();
+    }
+
+    /**
+     * Find out if a valid timezone mapping for the given timezone if present.
+     *
+     * @param int|string|float|DateTimeZone $tz
+     *
+     * @return bool|string timezone name if valid, else false.
+     */
+    public static function find_valid_timezone($tz) {
         global $CFG;
 
         if ($tz instanceof DateTimeZone) {
@@ -147,16 +172,8 @@ class core_date {
             return $tz;
         }
 
-        // Is server timezone usable?
-        if (isset($CFG->timezone) and !is_numeric($CFG->timezone)) {
-            $result = @timezone_open($CFG->timezone); // Hide notices if invalid.
-            if ($result !== false) {
-                return $result->getName();
-            }
-        }
-
-        // Bad luck, use the php.ini default or value set in config.php.
-        return self::get_default_php_timezone();
+        // Not a valid timezone.
+        return false;
     }
 
     /**
