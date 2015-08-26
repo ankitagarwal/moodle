@@ -3567,7 +3567,14 @@ class external extends external_api {
     /**
      * Count the competencies (visible to this user) in this plan.
      *
-     * @return int
+     * @param int $planid
+     * @param int $competencyid
+     *
+     * @return bool
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     * @throws \required_capability_exception
+     * @throws invalid_parameter_exception
      */
     public static function add_competency_to_plan($planid, $competencyid) {
         $params = self::validate_parameters(self::add_competency_to_plan_parameters(),

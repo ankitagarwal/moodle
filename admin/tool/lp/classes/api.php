@@ -1287,7 +1287,7 @@ class api {
     public static function add_competency_to_plan($planid, $competencyid) {
         global $USER;
 
-        $plan = \tool_lp\api::read_plan($planid);
+        $plan = self::read_plan($planid);
 
         $iscurrentuser = $plan->get_userid() == $USER->id;
         $context = context_user::instance($plan->get_userid());
@@ -1440,5 +1440,102 @@ class api {
         }
         $competencyfrom->set_sortorder($competencyto->get_sortorder());
         return $competencyfrom->update();
+    }
+
+    /**
+     * Request approval for a plan.
+     *
+     * @param $planid
+     * @param $userid
+     *
+     * @return bool
+     * @throws \moodle_exception
+     * @throws required_capability_exception
+     */
+    public static function send_plan_approval_request($planid, $userid) {
+        global $USER;
+
+        $plan = self::read_plan($planid);
+
+        $iscurrentuser = $plan->get_userid() == $USER->id;
+
+        // Check that the user is a valid user. Only one self can request approval.
+        $user = \core_user::get_user($plan->get_userid());
+        if (!$user || !\core_user::is_real_user($plan->get_userid()) || !$iscurrentuser) {
+            throw new \moodle_exception('invaliduser', 'error');
+        }
+
+        $record = new stdClass();
+        $record->planid = $planid;
+        $record->userid = $userid;
+
+        $approval = new plan_approval();
+        $where = "planid = :planid AND (action = :approved OR action = :requested)";
+        $params = array('approved' => plan_approval::ACTION_APPROVED, 'requested' => plan_approval::ACTION_APPROVAL_REQUESTED);
+        $order = "timecreaded DESC";
+        $exists = $approval->get_records_select($where, $params, $order, '*', 0, 1);
+        if (!$exists) {
+            // We can send a new request.
+            $approval->from_record($record);
+            if ($approval->create()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Approve or reject a plan.
+     *
+     * @param int $planid
+     * @param int $userid
+     * @param int $action
+     *
+     * @return bool
+     * @throws \moodle_exception
+     * @throws coding_exception
+     * @throws required_capability_exception
+     */
+    public static function approve_or_reject_plan($planid, $userid, $action = plan_approval::ACTION_APPROVED) {
+        global $USER;
+
+        $plan = self::read_plan($planid);
+
+        $iscurrentuser = $plan->get_userid() == $USER->id;
+        $context = context_user::instance($plan->get_userid());
+
+        // Check that the user is a valid user. Only one self can request approval.
+        $user = \core_user::get_user($plan->get_userid());
+        if (!$user || !\core_user::is_real_user($plan->get_userid())) {
+            throw new \moodle_exception('invaliduser', 'error');
+        }
+
+        if (!has_capability('tool/lp:planmanageall', $context)) {
+            if ($iscurrentuser) {
+                require_capability('tool/lp:planmanageown', $context);
+            } else {
+                throw new required_capability_exception($context, 'tool/lp:planmanageall', 'nopermissions', '');
+            }
+        }
+
+        $record = new stdClass();
+        $record->planid = $planid;
+        $record->userid = $userid;
+        $record->action = $action;
+
+        $approval = new plan_approval();
+        $where = "planid = :planid AND (action = :action)";
+        $params = array('action' => $action);
+        $order = "timecreaded DESC";
+        $exists = $approval->get_records_select($where, $params, $order, '*', 0, 1);
+        if (!$exists) {
+            // We can approve/reject this plan.
+            $approval->from_record($record);
+            if ($approval->create()) {
+                return true;
+            }
+        }
+        // It is already approved/rejected. This should never happen.
+        return false;
     }
 }

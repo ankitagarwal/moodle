@@ -144,7 +144,7 @@ class plan_competency extends persistent {
     public function to_record() {
         $record = new stdClass();
         $record->id = $this->get_id();
-        $record->templateid = $this->get_templateid();
+        $record->planid = $this->get_planid();
         $record->competencyid = $this->get_competencyid();
         $record->sortorder = $this->get_sortorder();
         $record->timecreated = $this->get_timecreated();
