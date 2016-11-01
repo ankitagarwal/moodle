@@ -5,6 +5,11 @@ $calendarEventCourseColor: #ffd3bd; // Pale red.
 $calendarEventGlobalColor: #d6f8cd; // Pale green.
 $calendarEventGroupColor: #fee7ae; // Pale yellow.
 $calendarEventUserColor: #dce7ec; // Pale blue.
+$calendarWellBackground: #fdfdfd; // pale white.
+$calendarHighlightBorder: #00acdf;
+
+// Calendar variables other then color.
+$calendarBaseBorderRadius: 4px;
 
 // Calendar event background colours defined.
 .calendar_event_course {
@@ -194,16 +199,15 @@ $calendarEventUserColor: #dce7ec; // Pale blue.
             margin: 0;
 
             .event {
-                //width: 92%;
-                //border-spacing: 0;
-                //border-collapse: separate;
-                //position: relative;
-                //padding: 20px 4%;
-                //margin-bottom: 20px;
-                //background-color: lighten($wellBackground, 3%);
-                //border: 1px solid darken($wellBackground, 7%);
-                //@include border-radius($baseBorderRadius);
-                //@include box-shadow(inset 0 1px 1px rgba(0,0,0,.05));
+                border-spacing: 0;
+                border-collapse: separate;
+                position: relative;
+                padding: 20px 4%;
+                margin-bottom: 20px;
+                background-color: lighten($calendarWellBackground, 3%);
+                border: 1px solid darken($calendarWellBackground, 7%);
+                @include border-radius($calendarBaseBorderRadius);
+                @include box-shadow(inset 0 1px 1px rgba(0,0,0,.05));
                 @extend .card;
                 list-style-type: none;
 
@@ -213,12 +217,12 @@ $calendarEventUserColor: #dce7ec; // Pale blue.
                 }
 
                 .name {
-                    //font-size: $fontSizeLarge;
-                    //font-weight: 200;
-                    //line-height: 24px;
+                    font-size: 17.5px;
+                    font-weight: 200;
+                    line-height: 24px;
                     @extend .h2;
                     float: left;
-                    //margin: 0;
+                    margin: 0;
                 }
 
                 .name,
@@ -262,6 +266,11 @@ $calendarEventUserColor: #dce7ec; // Pale blue.
                         margin: 0 3px;
                     }
                 }
+            }
+            .event:target {
+                margin-top: 0 !important;
+                padding-top: 20px !important;
+                border-left: $calendarHighlightBorder 2px solid;
             }
         }
     }
