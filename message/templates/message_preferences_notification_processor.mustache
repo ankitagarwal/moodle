@@ -84,8 +84,12 @@
                                                 {{#checked}}checked{{/checked}}
                                                 {{#disableall}}disabled{{/disableall}} />
                                             <div class="preference-state-status-container" tabindex="0">
-                                                <span class="on-text">{{#str}} on, message {{/str}}</span>
-                                                <span class="off-text">{{#str}} off, message {{/str}}</span>
+                                                <span role="button" title="{{displayname}}" class="on-text">
+                                                    {{#str}} on, message {{/str}}
+                                                </span>
+                                                <span role="button" title="{{displayname}}" class="off-text">
+                                                    {{#str}} off, message {{/str}}
+                                                </span>
                                                 {{> core/loading }}
                                             </div>
                                         </label>
@@ -109,8 +113,12 @@
                                                 {{#checked}}checked{{/checked}}
                                                 {{#disableall}}disabled{{/disableall}} />
                                             <div class="preference-state-status-container" tabindex="0">
-                                                <span class="on-text">{{#str}} on, message {{/str}}</span>
-                                                <span class="off-text">{{#str}} off, message {{/str}}</span>
+                                                <span role="button" title="{{displayname}}" class="on-text">
+                                                    {{#str}} on, message {{/str}}
+                                                </span>
+                                                <span role="button" title="{{displayname}}" class="off-text">
+                                                    {{#str}} off, message {{/str}}
+                                                </span>
                                                 {{> core/loading }}
                                             </div>
                                         </label>
