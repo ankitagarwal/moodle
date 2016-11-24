@@ -387,14 +387,45 @@ YUI.add('moodle-enrol-rolemanager', function(Y) {
             var roles = this.user.get(CONTAINER).one('.col_role .roles');
             var x = roles.getX() + 10;
             var y = roles.getY() + this.user.get(CONTAINER).get('offsetHeight') - 10;
+            var y2 = roles.getY() + 40;
+
+            if (y > y2) {
+                // When the div is wrapped, the popup is shown way below, thus we try to readjust it.
+                y = y2;
+            }
+
             if ( Y.one(document.body).hasClass('dir-rtl') ) {
-                this.get('elementNode').setStyle('right', x - 20).setStyle('top', y);
+                // We want to push from right, maxwidth - end of element - 20
+                var offset = Y.one('.col_role .roles').get('offsetWidth');
+                var body = Y.one('body');
+                // Sometimes there is huge margin, for ex in boost.
+                var maxwidth = body.get('offsetWidth') +
+                    this.removepx(body.getComputedStyle('marginRight')) + this.removepx(body.getComputedStyle('marginLeft'));
+                x = maxwidth - x - offset - 20;
+                // Force remove any left style (introduced by .popover not flipping).
+                this.get('elementNode').setStyle('right', x).setStyle('top', y).setStyle('left', "initial");
             } else {
                 this.get('elementNode').setStyle('left', x).setStyle('top', y);
             }
             this.get('elementNode').addClass('visible');
             this.escCloseEvent = Y.on('key', this.hide, document.body, 'down:27', this);
             this.displayed = true;
+        },
+        /**
+         * Removes integer version of style strings such as "285px"
+         *
+         * @method removepx
+         * @param {String} el size with "px" string
+         * @returns {int} size with "px" removed.
+         */
+        removepx: function(el) {
+            el = el.toString();
+            if (el.indexOf("em") != -1 || el.indexOf("%") != -1) {
+                return 0;
+            }
+            var len = el.length - 2;
+            var eldimension = parseInt(el.substring(0, len));
+            return isNaN(eldimension) ? 0 : eldimension;
         },
         hide : function() {
             if (this._escCloseEvent) {
