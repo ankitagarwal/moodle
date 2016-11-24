@@ -393,8 +393,13 @@ YUI.add('moodle-enrol-rolemanager', function(Y) {
             var roles = this.user.get(CONTAINER).one('.col_role .roles');
             var x = roles.getX() + 10;
             var y = roles.getY() + this.user.get(CONTAINER).get('offsetHeight') - 10;
+            var y2 = roles.getY() + 40;
+            if (y > y2) {
+                // When the div is wrapped, the popup is shown way below, thus we try to readjust it.
+                y = y2;
+            }
             if ( Y.one(document.body).hasClass('dir-rtl') ) {
-                this.get('elementNode').setStyle('right', x - 20).setStyle('top', y);
+                this.get('elementNode').setStyle('left', x - 20).setStyle('top', y);
             } else {
                 this.get('elementNode').setStyle('left', x).setStyle('top', y);
             }
