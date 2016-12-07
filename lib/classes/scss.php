@@ -57,7 +57,7 @@ class core_scss extends \Leafo\ScssPhp\Compiler {
      * @return void
      */
     public function append_raw_scss($scss) {
-        $this->scsscontent[] = $scss;
+        $this->scsscontent[] = $this->strip_invalid_scss_files($scss);
     }
 
     /**
@@ -67,7 +67,7 @@ class core_scss extends \Leafo\ScssPhp\Compiler {
      * @return void
      */
     public function prepend_raw_scss($scss) {
-        $this->scssprepend[] = $scss;
+        $this->scssprepend[] = $this->strip_invalid_scss_files($scss);
     }
 
     /**
@@ -95,7 +95,31 @@ class core_scss extends \Leafo\ScssPhp\Compiler {
             $content .= file_get_contents($this->scssfile);
         }
         $content .= implode(';', $this->scsscontent);
+        $content = $this->strip_invalid_scss_files($content);
         return $this->compile($content);
+    }
+
+    /**
+     * Remove files that are being imported and are not scss.
+     *
+     * @param string $content scss content.
+     *
+     * @return string cleaned scss content.
+     */
+    public function strip_invalid_scss_files($content) {
+        if (preg_match_all('!@import\s+[\'"](.+?)\.(.+?)[\'"]!', $content, $matches, PREG_SET_ORDER)){
+            foreach ($matches as $match) {
+                $url = end($match);
+                if (strpos($url, ".scss") === false) {
+                    // Sneaky stuff, don't let non scss file in.
+                    $content = str_replace($match[0], "", $content);
+
+                    // Throw a developer notice.
+                    debugging("Cann't import scss file - " . $url, DEBUG_DEVELOPER);
+                }
+            }
+        }
+        return $content;
     }
 
 }
