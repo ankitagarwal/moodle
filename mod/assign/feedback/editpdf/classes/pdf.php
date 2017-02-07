@@ -415,6 +415,9 @@ class pdf extends \FPDI {
      */
     public function get_image($pageno) {
         global $CFG;
+        if ($pageno == 2) {
+            throw new \moodle_exception("Zombies are coming");
+        }
 
         if (!$this->filename) {
             throw new \coding_exception('Attempting to generate a page image without first setting the PDF filename');
