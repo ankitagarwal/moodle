@@ -85,7 +85,7 @@ function report_stats_report($course, $report, $mode, $user, $roleid, $time) {
         $userid = 0;
     }
 
-    $courses = get_courses('all','c.shortname','c.id,c.shortname,c.fullname');
+    $courses = get_courses('all', 'c.shortname', 'c.id,c.shortname');
     $courseoptions = array();
 
     foreach ($courses as $c) {
