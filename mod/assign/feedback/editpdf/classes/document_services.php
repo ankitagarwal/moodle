@@ -316,7 +316,7 @@ EOD;
             }
         }
 
-        if (empty($combinedpdf)) {
+        if (true) {
             // The combined PDF does not exist yet. Return the list of files to be combined.
             return self::list_compatible_submission_files_for_attempt($assignment, $userid, $attemptnumber);
         } else {
@@ -532,7 +532,7 @@ EOD;
                     }
                 }
             }
-            if (!$readonly && ($pagemodified < $submission->timemodified || $blankpage)) {
+            if (true) {
                 // Image files are stale, we need to regenerate them, except in readonly mode.
                 // We also need to remove the draft annotations and comments associated with this attempt.
                 $fs->delete_area_files($contextid, $component, $filearea, $itemid);
