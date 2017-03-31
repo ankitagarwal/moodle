@@ -44,6 +44,8 @@ class document_services {
     const COMBINED_PDF_FILEAREA = 'combined';
     /** File area for importing html */
     const IMPORT_HTML_FILEAREA = 'importhtml';
+    /** File area for failed document conversions. */
+    const FAILED_DOCUMENT_CONVERSION_FILEAREA = 'faileddocumentconversion';
     /** File area for page images */
     const PAGE_IMAGE_FILEAREA = 'pages';
     /** File area for readonly page images */
@@ -83,7 +85,7 @@ EOD;
      * This function will take an int or an assignment instance and
      * return an assignment instance. It is just for convenience.
      * @param int|\assign $assignment
-     * @return assign
+     * @return \assign
      */
     private static function get_assignment_from_param($assignment) {
         global $CFG;
@@ -142,6 +144,39 @@ EOD;
     }
 
     /**
+     * Get converted document and if there is an error get an error pdf.
+     *
+     * @param \core_files\converter $converter
+     * @param \file_storage $fs
+     * @param \stored_file $file
+     * @param \assign $assignment
+     * @param Object $submission
+     * @param string $format
+     * @return \core_files\conversion
+     */
+    protected static function get_converted_document(\core_files\converter $converter, \file_storage $fs,
+                                                     \stored_file $file, \assign $assignment, $submission, $format = 'pdf') {
+        $conversion = $converter->start_conversion($file, $format);
+        $converter->poll_conversion($conversion);
+        if ($conversion->get('status') == \core_files\conversion::STATUS_FAILED) {
+            $record = new \stdClass();
+            $record->contextid = $assignment->get_context()->id;
+            $record->component = 'assignfeedback_editpdf';
+            $record->filearea = self::FAILED_DOCUMENT_CONVERSION_FILEAREA;
+            $record->itemid = $submission->id;
+            $record->filepath = '/';
+            $record->filename = 'failed_conversion.html';
+            $html = 'test';
+
+            $warningfile = $fs->create_file_from_string($record, $html);
+            $conversion = $converter->start_conversion($warningfile, $format, true);
+            $converter->poll_conversion($conversion);
+            $warningfile->delete();
+        }
+        return $conversion;
+    }
+
+    /**
      * This function will search for all files that can be converted
      * and concatinated into a PDF (1.4) - for any submission plugin
      * for this students attempt.
@@ -182,11 +217,12 @@ EOD;
             if ($plugin->is_enabled() && $plugin->is_visible()) {
                 $pluginfiles = $plugin->get_files($submission, $user);
                 foreach ($pluginfiles as $filename => $file) {
+
                     if ($file instanceof \stored_file) {
                         if ($file->get_mimetype() === 'application/pdf') {
                             $files[$filename] = $file;
-                        } else if ($convertedfile = $converter->start_conversion($file, 'pdf')) {
-                            $files[$filename] = $convertedfile;
+                        } else {
+                            $files[$filename] = self::get_converted_document($converter, $fs, $file, $assignment, $submission);
                         }
                     } else {
                         // Create a tmp stored_file from this html string.

@@ -140,12 +140,12 @@ class converter implements \core_files\converter_interface {
         chdir($uniqdir);
         $result = exec($cmd, $output);
         chdir($currentdir);
-        touch($newtmpfile);
-        if (filesize($newtmpfile) === 0) {
-            $conversion->set('status', conversion::STATUS_FAILED);
-
-            return $this;
-        }
+//        touch($newtmpfile);
+//        if (filesize($newtmpfile) === 0) {
+//            $conversion->set('status', conversion::STATUS_FAILED);
+//
+//            return $this;
+//        }
 
         $conversion
             ->store_destfile_from_path($newtmpfile)
