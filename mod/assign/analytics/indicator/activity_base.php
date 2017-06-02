@@ -22,7 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace core_analytics\local\indicator\choice;
+namespace mod_assign\analytics\indicator;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -36,10 +36,19 @@ defined('MOODLE_INTERNAL') || die();
 abstract class activity_base extends \core_analytics\local\indicator\community_of_inquiry_activity {
 
     public static function get_name() {
-        return get_string('indicator:cognitivedepthchoice', 'analytics');
+        return get_string('indicator:cognitivedepthassign', 'analytics');
     }
 
     protected function get_activity_type() {
-        return 'choice';
+        return 'assign';
+    }
+
+    protected function feedback_viewed_events() {
+        return array('\mod_assign\event\feedback_viewed');
+    }
+
+    protected function feedback_check_grades() {
+        // We need the grade to be released to the student to consider that feedback has been provided.
+        return true;
     }
 }

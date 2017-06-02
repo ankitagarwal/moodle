@@ -15,31 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Cognitive depth indicator - book.
+ * Social breadth indicator - assign.
  *
  * @package   core_analytics
  * @copyright 2017 David Monllao {@link http://www.davidmonllao.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace core_analytics\local\indicator\book;
+namespace mod_assign\analytics\indicator;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Cognitive depth indicator - book.
+ * Social breadth indicator - assign.
  *
  * @package   core_analytics
  * @copyright 2017 David Monllao {@link http://www.davidmonllao.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class cognitive_depth extends activity_base {
+class social_breadth extends activity_base {
 
     protected function get_indicator_type() {
-        return self::INDICATOR_COGNITIVE;
+        return self::INDICATOR_SOCIAL;
     }
 
-    protected function get_cognitive_depth_level(\cm_info $cm) {
-        return 1;
+    protected function get_social_breadth_level(\cm_info $cm) {
+        return 2;
     }
 }

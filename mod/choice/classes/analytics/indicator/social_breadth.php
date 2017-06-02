@@ -22,7 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace core_analytics\local\indicator\choice;
+namespace mod_choice\analytics\indicator;
 
 defined('MOODLE_INTERNAL') || die();
 

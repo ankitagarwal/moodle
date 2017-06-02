@@ -15,31 +15,41 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Activity base class.
+ * Cognitive depth indicator - assign.
  *
  * @package   core_analytics
- * @copyright 2017 onwards Ankit Agarwal <ankit.agrr@gmail.com>
+ * @copyright 2017 David Monllao {@link http://www.davidmonllao.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace core_analytics\local\indicator\book;
+namespace mod_assign\analytics\indicator;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Activity base class.
+ * Cognitive depth indicator - assign.
  *
  * @package   core_analytics
- * @copyright 2017 onwards Ankit Agarwal <ankit.agrr@gmail.com>
+ * @copyright 2017 David Monllao {@link http://www.davidmonllao.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class activity_base extends \core_analytics\local\indicator\community_of_inquiry_activity {
+class cognitive_depth extends activity_base {
 
-    public static function get_name() {
-        return get_string('indicator:cognitivedepthbook', 'analytics');
+    protected function get_indicator_type() {
+        return self::INDICATOR_COGNITIVE;
     }
 
-    protected function get_activity_type() {
-        return 'book';
+    protected function get_cognitive_depth_level(\cm_info $cm) {
+        return 5;
     }
+
+    protected function feedback_submitted_events() {
+        return array('\mod_assign\event\assessable_submitted');
+    }
+
+    protected function feedback_replied(\cm_info $cm, $contextid, $userid, $after = false) {
+        // No level 4.
+        return false;
+    }
+
 }

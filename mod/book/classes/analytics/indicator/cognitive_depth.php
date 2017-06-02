@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Cognitive depth indicator - assign.
+ * Cognitive depth indicator - book.
  *
  * @package   core_analytics
  * @copyright 2017 David Monllao {@link http://www.davidmonllao.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace core_analytics\local\indicator\assign;
+namespace mod_book\analytics\indicator;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Cognitive depth indicator - assign.
+ * Cognitive depth indicator - book.
  *
  * @package   core_analytics
  * @copyright 2017 David Monllao {@link http://www.davidmonllao.com}
@@ -40,16 +40,6 @@ class cognitive_depth extends activity_base {
     }
 
     protected function get_cognitive_depth_level(\cm_info $cm) {
-        return 5;
+        return 1;
     }
-
-    protected function feedback_submitted_events() {
-        return array('\mod_assign\event\assessable_submitted');
-    }
-
-    protected function feedback_replied(\cm_info $cm, $contextid, $userid, $after = false) {
-        // No level 4.
-        return false;
-    }
-
 }

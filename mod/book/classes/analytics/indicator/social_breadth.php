@@ -15,40 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Activity base class.
+ * Social breadth indicator - book.
  *
  * @package   core_analytics
- * @copyright 2017 onwards Ankit Agarwal <ankit.agrr@gmail.com>
+ * @copyright 2017 David Monllao {@link http://www.davidmonllao.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace core_analytics\local\indicator\assign;
+namespace mod_book\analytics\indicator;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Activity base class.
+ * Social breadth indicator - book.
  *
  * @package   core_analytics
- * @copyright 2017 onwards Ankit Agarwal <ankit.agrr@gmail.com>
+ * @copyright 2017 David Monllao {@link http://www.davidmonllao.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class activity_base extends \core_analytics\local\indicator\community_of_inquiry_activity {
+class social_breadth extends activity_base {
 
-    public static function get_name() {
-        return get_string('indicator:cognitivedepthassign', 'analytics');
+    protected function get_indicator_type() {
+        return self::INDICATOR_SOCIAL;
     }
 
-    protected function get_activity_type() {
-        return 'assign';
-    }
-
-    protected function feedback_viewed_events() {
-        return array('\mod_assign\event\feedback_viewed');
-    }
-
-    protected function feedback_check_grades() {
-        // We need the grade to be released to the student to consider that feedback has been provided.
-        return true;
+    protected function get_social_breadth_level(\cm_info $cm) {
+        return 1;
     }
 }
