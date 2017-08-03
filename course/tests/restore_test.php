@@ -242,6 +242,7 @@ class core_course_restore_testcase extends advanced_testcase {
         $this->resetAfterTest();
         $dg = $this->getDataGenerator();
 
+        set_config('restore_merge_overwrite_conf', 1, 'restore');
         $this->assertEquals(1, get_config('restore', 'restore_merge_course_shortname'));
         $this->assertEquals(1, get_config('restore', 'restore_merge_course_fullname'));
         $this->assertEquals(1, get_config('restore', 'restore_merge_course_startdate'));

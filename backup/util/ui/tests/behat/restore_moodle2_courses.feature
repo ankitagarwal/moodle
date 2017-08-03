@@ -118,6 +118,7 @@ Feature: Restore Moodle 2 course backups
       | Confirmation | Filename | test_backup.mbz |
     And I restore "test_backup.mbz" backup into "Course 2" course using this options:
       | Schema | Overwrite course configuration | Yes |
+      | Schema | id_setting_course_course_shortname_customize | 1 |
     And I navigate to "Edit settings" node in "Course administration"
     And I expand all fieldsets
     Then the field "id_format" matches value "Topics format"
@@ -173,6 +174,7 @@ Feature: Restore Moodle 2 course backups
     And I navigate to "Restore" node in "Course administration"
     And I merge "test_backup.mbz" backup into the current course after deleting it's contents using this options:
       | Schema | Overwrite course configuration | Yes |
+      | Schema | id_setting_course_course_shortname_customize | 1 |
     And I navigate to "Edit settings" node in "Course administration"
     And I expand all fieldsets
     Then the field "id_format" matches value "Topics format"
