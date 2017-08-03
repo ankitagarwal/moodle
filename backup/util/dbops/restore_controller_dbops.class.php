@@ -193,8 +193,7 @@ abstract class restore_controller_dbops extends restore_dbops {
                 foreach (['course_fullname', 'course_shortname', 'course_startdate'] as $settingname) {
                     if ($plan->setting_exists($settingname)) {
                         $setting = $plan->get_setting($settingname);
-                        $overwriteconf->add_dependency($setting, setting_dependency::DISABLED_FALSE,
-                            array('defaultvalue' => $setting->get_value()));
+                        $overwriteconf->add_dependency($setting, setting_dependency::DISABLED_FALSE);
                     }
                 }
             }
@@ -252,7 +251,19 @@ abstract class restore_controller_dbops extends restore_dbops {
                 if ($setting->get_status() != base_setting::LOCKED_BY_CONFIG
                         && $setting->get_status() != base_setting::LOCKED_BY_PERMISSION
                         && $setting->get_ui()->is_changeable()) {
-                    $setting->set_value($value);
+
+                    if ($settingname == 'course_startdate') {
+                        // Course start date is a special case. We want to overwrite it only when both overwrite_conf and
+                        // startdate are checked. See MDL-41652 for details.
+                        if ($value && $plan->setting_exists('overwrite_conf') &&
+                            $plan->get_setting('overwrite_conf')->get_value()) {
+                            $setting->set_value($value);
+                        } else {
+                            $setting->set_value(false);
+                        }
+                    } else {
+                        $setting->set_value($value);
+                    }
                     if ($uselocks && $locked) {
                         $setting->set_status(base_setting::LOCKED_BY_CONFIG);
                     }
