@@ -208,16 +208,24 @@ abstract class restore_controller_dbops extends restore_dbops {
      * @param backup_setting $setting
      * @return mixed
      */
-    private static function get_setting_default($config, $setting) {
+    private static function get_setting_default($config, $setting, restore_plan $plan) {
         $value = get_config('restore', $config);
 
         if (in_array($setting->get_name(), ['course_fullname', 'course_shortname', 'course_startdate']) &&
                 $setting->get_ui() instanceof backup_setting_ui_defaultcustom) {
             // Special case - admin config settings course_fullname, etc. are boolean and the restore settings are strings.
             $value = (bool)$value;
+            $overwrite = $plan->setting_exists('overwrite_conf') && $plan->get_setting('overwrite_conf')->get_value();
+            $value = $overwrite && $value;
+            print_object($setting);
+            print_object((int)$value);
+            sleep(10);
+            $attributes = $setting->get_ui()->get_attributes();
             if ($value) {
                 $attributes = $setting->get_ui()->get_attributes();
                 $value = $attributes['customvalue'];
+            } else {
+                $value = false;
             }
         }
 
@@ -245,7 +253,7 @@ abstract class restore_controller_dbops extends restore_dbops {
         foreach ($settings as $config => $settingname) {
             if ($plan->setting_exists($settingname)) {
                 $setting = $plan->get_setting($settingname);
-                $value = self::get_setting_default($config, $setting);
+                $value = self::get_setting_default($config, $setting, $plan);
                 $locked = (get_config('restore', $config . '_locked') == true);
 
                 // We can only update the setting if it isn't already locked by config or permission.

@@ -1,4 +1,4 @@
-@core @core_course @javascript
+@rotty2 @core @core_course @javascript
 Feature: Course restore shifts dates
   In order to verify if course restore works properly
   As an admin
@@ -49,7 +49,7 @@ Feature: Course restore shifts dates
 
   Scenario: Restore course with overwrite_conf set to No (course start date can't be set in this case, but we use site default)
     Given I set the following administration settings values:
-      | restore_merge_overwrite_conf   | 1 |
+      | restore_merge_overwrite_conf   | 0 |
       | restore_merge_course_startdate | 1 |
     And I am on "Course 1 1" course homepage
     And I navigate to "Restore" in current page administration

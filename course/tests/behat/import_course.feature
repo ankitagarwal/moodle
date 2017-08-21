@@ -1,4 +1,4 @@
-@core @core_course @javascript
+@rotty @core @core_course @javascript
 Feature: Course import shifts dates
   In order to verify if course restore works properly
   As an admin

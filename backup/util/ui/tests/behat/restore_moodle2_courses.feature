@@ -1,4 +1,4 @@
-@core @core_backup
+@rotty @core @core_backup
 Feature: Restore Moodle 2 course backups
   In order to continue using my stored course contents
   As a teacher and an admin
