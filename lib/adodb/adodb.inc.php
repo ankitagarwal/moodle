@@ -14,7 +14,7 @@
 /**
 	\mainpage
 
-	@version   v5.20.7  20-Sep-2016
+	@version   v5.20.9  21-Dec-2016
 	@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
 	@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
 
@@ -224,16 +224,10 @@ if (!defined('_ADODB_LAYER')) {
 			}
 		}
 
-
-		// Initialize random number generator for randomizing cache flushes
-		// -- note Since PHP 4.2.0, the seed  becomes optional and defaults to a random value if omitted.
-		// MDL-41198 Removed random seed initialization.
-		// srand(((double)microtime())*1000000);
-
 		/**
 		 * ADODB version as a string.
 		 */
-		$ADODB_vers = 'v5.20.7  20-Sep-2016';
+		$ADODB_vers = 'v5.20.9  21-Dec-2016';
 
 		/**
 		 * Determines whether recordset->RecordCount() is used.
