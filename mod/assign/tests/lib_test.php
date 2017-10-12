@@ -413,8 +413,8 @@ class mod_assign_lib_testcase extends mod_assign_base_testcase {
         // Set the user to a teacher.
         $this->setUser($this->editingteachers[0]);
 
-        // The teacher should not care about the due date event.
-        $this->assertFalse(mod_assign_core_calendar_is_event_visible($event));
+        // The teacher can see the due date event.
+        $this->assertTrue(mod_assign_core_calendar_is_event_visible($event));
     }
 
     public function test_assign_core_calendar_is_event_visible_duedate_event_as_student() {
@@ -481,14 +481,8 @@ class mod_assign_lib_testcase extends mod_assign_base_testcase {
         $this->setUser($this->teachers[0]);
 
         // Decorate action event.
-        $actionevent = mod_assign_core_calendar_provide_event_action($event, $factory);
+        $this->assertNull(mod_assign_core_calendar_provide_event_action($event, $factory));
 
-        // Confirm the event was decorated.
-        $this->assertInstanceOf('\core_calendar\local\event\value_objects\action', $actionevent);
-        $this->assertEquals(get_string('addsubmission', 'assign'), $actionevent->get_name());
-        $this->assertInstanceOf('moodle_url', $actionevent->get_url());
-        $this->assertEquals(1, $actionevent->get_item_count());
-        $this->assertFalse($actionevent->is_actionable());
     }
 
     public function test_assign_core_calendar_provide_event_action_duedate_as_student() {

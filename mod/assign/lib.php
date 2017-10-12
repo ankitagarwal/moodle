@@ -1823,8 +1823,7 @@ function assign_check_updates_since(cm_info $cm, $from, $filter = array()) {
  * Is the event visible?
  *
  * This is used to determine global visibility of an event in all places throughout Moodle. For example,
- * the ASSIGN_EVENT_TYPE_GRADINGDUE event will not be shown to students on their calendar, and
- * ASSIGN_EVENT_TYPE_DUE events will not be shown to teachers.
+ * the ASSIGN_EVENT_TYPE_GRADINGDUE event will not be shown to students on their calendar.
  *
  * @param calendar_event $event
  * @return bool Returns true if the event is visible to the current user, false otherwise.
@@ -1841,6 +1840,8 @@ function mod_assign_core_calendar_is_event_visible(calendar_event $event) {
 
     if ($event->eventtype == ASSIGN_EVENT_TYPE_GRADINGDUE) {
         return $assign->can_grade();
+    } elseif ($event->eventtype == ASSIGN_EVENT_TYPE_DUE) {
+        return $assign->can_view_submission($USER->id);
     } else {
         return !$assign->can_grade() && $assign->can_view_submission($USER->id);
     }
@@ -1880,6 +1881,10 @@ function mod_assign_core_calendar_provide_event_action(calendar_event $event,
         $itemcount = $assign->count_submissions_need_grading();
         $actionable = $assign->can_grade() && (time() >= $assign->get_instance()->allowsubmissionsfromdate);
     } else {
+        if ($event->eventtype == ASSIGN_EVENT_TYPE_DUE && $assign->can_grade()) {
+            // No need to show this to teachers.
+            return null;
+        }
         $usersubmission = $assign->get_user_submission($USER->id, false);
         if ($usersubmission && $usersubmission->status === ASSIGN_SUBMISSION_STATUS_SUBMITTED) {
             // The user has already submitted.
