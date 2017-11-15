@@ -56,6 +56,8 @@ class legacy_plugin_cron_task extends scheduled_task {
             if (method_exists($authplugin, 'cron')) {
                 mtrace("Running cron for auth/$auth...");
                 $authplugin->cron();
+                debugging("Use of legacy cron is deprecated (auth/$auth). Please use scheduled tasks.",
+                    DEBUG_DEVELOPER);
                 if (!empty($authplugin->log)) {
                     mtrace($authplugin->log);
                 }
@@ -74,6 +76,8 @@ class legacy_plugin_cron_task extends scheduled_task {
             }
             mtrace("Running cron for enrol_$ename...");
             $enrol->cron();
+            debugging("Use of legacy cron is deprecated (enrol_$ename). Please use scheduled tasks.",
+                DEBUG_DEVELOPER);
             $enrol->set_config('lastcron', time());
         }
 
@@ -91,6 +95,8 @@ class legacy_plugin_cron_task extends scheduled_task {
                         $predbqueries = $DB->perf_get_queries();
                         $pretime      = microtime(1);
                         if ($cronfunction()) {
+                            debugging("Use of legacy cron is deprecated ($cronfunction). Please use scheduled tasks.",
+                                DEBUG_DEVELOPER);
                             $DB->set_field("modules", "lastcron", $timenow, array("id" => $mod->id));
                         }
                         if (isset($predbqueries)) {
@@ -119,6 +125,8 @@ class legacy_plugin_cron_task extends scheduled_task {
                     if (method_exists($blockobj, 'cron')) {
                         mtrace("Processing cron function for ".$block->name.'....', '');
                         if ($blockobj->cron()) {
+                            debugging("Use of legacy cron is deprecated ($classname::cron()). Please use scheduled tasks.",
+                                DEBUG_DEVELOPER);
                             $DB->set_field('block', 'lastcron', $timenow, array('id' => $block->id));
                         }
                         // Reset possible changes by blocks to time_limit. MDL-11597.
