@@ -36,10 +36,12 @@ if ($hassiteconfig) {
             $pluginname = substr($fullclassname, 1, strpos($fullclassname, '\\', 1) - 1);
             $predictors[$fullclassname] = new lang_string('pluginname', $pluginname);
         }
-        $settings->add(new \core_analytics\admin_setting_predictor('analytics/predictionsprocessor',
-            new lang_string('predictionsprocessor', 'analytics'), new lang_string('predictionsprocessor_help', 'analytics'),
-            '\mlbackend_php\processor', $predictors)
-        );
+        if (!empty($predictors)) {
+            $settings->add(new \core_analytics\admin_setting_predictor('analytics/predictionsprocessor',
+                    new lang_string('predictionsprocessor', 'analytics'), new lang_string('predictionsprocessor_help', 'analytics'),
+                    '\mlbackend_php\processor', $predictors)
+            );
+        }
 
         // Log store.
         $logmanager = get_log_manager();
