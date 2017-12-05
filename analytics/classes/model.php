@@ -1338,6 +1338,33 @@ class model {
     }
 
     /**
+     * Exports the model data as JSON.
+     *
+     * @return string JSON encoded data.
+     */
+    public function export_as_json() {
+        global $CFG;
+
+        $data = new \stdClass();
+        $data->target = $this->get_target()->get_id();
+
+
+        if ($timesplitting = $this->get_time_splitting()) {
+            $data->timesplitting = $timesplitting->get_id();
+        } else {
+            // We don't want to allow models without timesplitting to be exported.
+            throw new \moodle_exception('errornotimesplittings', 'analytics');
+        }
+
+        $data->indicators = [];
+        foreach ($this->get_indicators() as $indicator) {
+            $data->indicators[] = $indicator->get_id();
+        }
+        $data->moodleversion = $CFG->version;
+        return json_encode($data);
+    }
+
+    /**
      * Returns the model logs data.
      *
      * @param int $limitfrom
