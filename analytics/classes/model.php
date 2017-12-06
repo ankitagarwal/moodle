@@ -372,6 +372,44 @@ class model {
     }
 
     /**
+     * Creates a new model from json configuration.
+     *
+     * @param string $json json data.
+     * @return \core_analytics\model
+     */
+    public static function create_from_json($jsondata) {
+
+        \core_analytics\manager::check_can_manage_models();
+        if (empty($jsondata) || !isset($jsondata->target) || !isset($jsondata->indicators) || !isset($jsondata->timesplitting)) {
+            throw new \coding_exception("invalid json data");
+        }
+
+        // Target.
+        $target = $jsondata->target;
+        if (!class_exists($target)) {
+            throw new \moodle_exception('classdoesnotexist', 'tool_analytics', $target);
+        }
+        $target = \core_analytics\manager::get_target($target);
+
+        // Indicators.
+        $indicators = [];
+        foreach($jsondata->indicators as $indicator) {
+            if (!class_exists($indicator)) {
+                throw new \moodle_exception('classdoesnotexist', 'tool_analytics', $indicator);
+            }
+            $indicators[] = \core_analytics\manager::get_indicator($indicator);
+        }
+
+        // Timesplitting.
+        $timesplitting = $jsondata->timesplitting;
+        if (!class_exists($timesplitting)) {
+            throw new \moodle_exception('classdoesnotexist', 'tool_analytics', $timesplitting);
+        }
+
+       return self::create($target, $indicators, $timesplitting);
+    }
+
+    /**
      * Does this model exist?
      *
      * If no indicators are provided it considers any model with the provided
