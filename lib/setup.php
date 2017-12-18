@@ -562,7 +562,7 @@ if (defined('BEHAT_SITE_RUNNING') && !defined('BEHAT_TEST') && !defined('BEHAT_U
 }
 
 // If there are any errors in the standard libraries we want to know!
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
 
 // Just say no to link prefetching (Moz prefetching, Google Web Accelerator, others)
 // http://www.google.com/webmasters/faq.html#prefetchblock
